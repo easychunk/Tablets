@@ -1,5 +1,6 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { apiFetch, getApiUrl, resolveUrl } from "../../api";
+import logo from "../../assets/logo.png";
 
 type Room = { id: number; name: string; location?: string | null; is_active: boolean };
 type ClassGroup = { id: number; name: string; is_active: boolean };
@@ -80,6 +81,9 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [students, setStudents] = useState<Student[]>([]);
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [checkins, setCheckins] = useState<CheckinItem[]>([]);
+  const [activeTab, setActiveTab] = useState<
+    "dashboard" | "rooms" | "classes" | "students" | "timetable" | "media" | "analytics"
+  >("dashboard");
 
   const [roomForm, setRoomForm] = useState({ name: "", location: "" });
   const [roomUpdate, setRoomUpdate] = useState({ id: "", name: "", location: "", is_active: true });
@@ -296,297 +300,406 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
     setCheckins(data);
   };
 
+  const metrics = useMemo(
+    () => [
+      { label: "Rooms", value: rooms.length },
+      { label: "Classes", value: classes.length },
+      { label: "Students", value: students.length },
+      { label: "Media files", value: media.length },
+    ],
+    [rooms.length, classes.length, students.length, media.length]
+  );
+
   return (
-    <div className="container">
-      <div className="card" style={{ display: "flex", justifyContent: "space-between" }}>
-        <h1>Admin</h1>
-        <button className="secondary" onClick={logout}>
-          Logout
-        </button>
-      </div>
-
-      <div className="card">
-        <h2>Rooms</h2>
-        <div className="grid grid-2">
-          <form onSubmit={submitRoom}>
-            <label>Name</label>
-            <input value={roomForm.name} onChange={(e) => setRoomForm({ ...roomForm, name: e.target.value })} />
-            <label>Location</label>
-            <input value={roomForm.location} onChange={(e) => setRoomForm({ ...roomForm, location: e.target.value })} />
-            <button type="submit" style={{ marginTop: 8 }}>
-              Create
-            </button>
-          </form>
-          <form onSubmit={submitRoomUpdate}>
-            <label>Room ID</label>
-            <input value={roomUpdate.id} onChange={(e) => setRoomUpdate({ ...roomUpdate, id: e.target.value })} />
-            <label>Name</label>
-            <input value={roomUpdate.name} onChange={(e) => setRoomUpdate({ ...roomUpdate, name: e.target.value })} />
-            <label>Location</label>
-            <input
-              value={roomUpdate.location}
-              onChange={(e) => setRoomUpdate({ ...roomUpdate, location: e.target.value })}
-            />
-            <label>Active</label>
-            <select
-              value={roomUpdate.is_active ? "true" : "false"}
-              onChange={(e) => setRoomUpdate({ ...roomUpdate, is_active: e.target.value === "true" })}
-            >
-              <option value="true">true</option>
-              <option value="false">false</option>
-            </select>
-            <button type="submit" style={{ marginTop: 8 }}>
-              Update
-            </button>
-          </form>
+    <div className="admin-layout">
+      <aside className="admin-sidebar">
+        <div className="brand">
+          <div className="brand-logo">
+            <img src={logo} alt="Free People School" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+          </div>
+          <div>
+            <div>School Display</div>
+            <small style={{ color: "#8fa2b5" }}>Administrator</small>
+          </div>
         </div>
-        <form onSubmit={deleteRoom} style={{ marginTop: 12 }}>
-          <label>Delete room by ID</label>
-          <input value={roomDeleteId} onChange={(e) => setRoomDeleteId(e.target.value)} />
-          <button type="submit" style={{ marginTop: 8 }}>
-            Delete
+        <nav className="nav-list">
+          <button
+            className={`nav-button ${activeTab === "dashboard" ? "active" : ""}`}
+            onClick={() => setActiveTab("dashboard")}
+          >
+            Dashboard
           </button>
-        </form>
-        <ul>
-          {rooms.map((room) => (
-            <li key={room.id}>
-              {room.id} — {room.name} ({room.location || "n/a"})
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="card">
-        <h2>Classes</h2>
-        <div className="grid grid-2">
-          <form onSubmit={submitClass}>
-            <label>Name</label>
-            <input value={classForm.name} onChange={(e) => setClassForm({ name: e.target.value })} />
-            <button type="submit" style={{ marginTop: 8 }}>
-              Create
-            </button>
-          </form>
-          <form onSubmit={submitClassUpdate}>
-            <label>Class ID</label>
-            <input value={classUpdate.id} onChange={(e) => setClassUpdate({ ...classUpdate, id: e.target.value })} />
-            <label>Name</label>
-            <input value={classUpdate.name} onChange={(e) => setClassUpdate({ ...classUpdate, name: e.target.value })} />
-            <label>Active</label>
-            <select
-              value={classUpdate.is_active ? "true" : "false"}
-              onChange={(e) => setClassUpdate({ ...classUpdate, is_active: e.target.value === "true" })}
-            >
-              <option value="true">true</option>
-              <option value="false">false</option>
-            </select>
-            <button type="submit" style={{ marginTop: 8 }}>
-              Update
-            </button>
-          </form>
+          <button
+            className={`nav-button ${activeTab === "rooms" ? "active" : ""}`}
+            onClick={() => setActiveTab("rooms")}
+          >
+            Rooms
+          </button>
+          <button
+            className={`nav-button ${activeTab === "classes" ? "active" : ""}`}
+            onClick={() => setActiveTab("classes")}
+          >
+            Classes
+          </button>
+          <button
+            className={`nav-button ${activeTab === "students" ? "active" : ""}`}
+            onClick={() => setActiveTab("students")}
+          >
+            Students
+          </button>
+          <button
+            className={`nav-button ${activeTab === "timetable" ? "active" : ""}`}
+            onClick={() => setActiveTab("timetable")}
+          >
+            Timetable
+          </button>
+          <button
+            className={`nav-button ${activeTab === "media" ? "active" : ""}`}
+            onClick={() => setActiveTab("media")}
+          >
+            Media
+          </button>
+          <button
+            className={`nav-button ${activeTab === "analytics" ? "active" : ""}`}
+            onClick={() => setActiveTab("analytics")}
+          >
+            Analytics
+          </button>
+        </nav>
+        <div>
+          <button className="secondary" onClick={logout}>
+            Logout
+          </button>
         </div>
-        <form onSubmit={deleteClass} style={{ marginTop: 12 }}>
-          <label>Delete class by ID</label>
-          <input value={classDeleteId} onChange={(e) => setClassDeleteId(e.target.value)} />
-          <button type="submit" style={{ marginTop: 8 }}>
-            Delete
-          </button>
-        </form>
-        <ul>
-          {classes.map((cls) => (
-            <li key={cls.id}>
-              {cls.id} — {cls.name}
-            </li>
-          ))}
-        </ul>
-      </div>
+      </aside>
 
-      <div className="card">
-        <h2>Students</h2>
-        <div className="grid grid-2">
-          <form onSubmit={submitStudent}>
-            <label>Full name</label>
-            <input
-              value={studentForm.full_name}
-              onChange={(e) => setStudentForm({ ...studentForm, full_name: e.target.value })}
-            />
-            <label>Class ID</label>
-            <input
-              value={studentForm.class_id}
-              onChange={(e) => setStudentForm({ ...studentForm, class_id: e.target.value })}
-            />
-            <label>NFC UID</label>
-            <input
-              value={studentForm.nfc_uid}
-              onChange={(e) => setStudentForm({ ...studentForm, nfc_uid: e.target.value })}
-            />
-            <button type="submit" style={{ marginTop: 8 }}>
-              Create
-            </button>
-          </form>
-          <form onSubmit={submitStudentUpdate}>
-            <label>Student ID</label>
-            <input
-              value={studentUpdate.id}
-              onChange={(e) => setStudentUpdate({ ...studentUpdate, id: e.target.value })}
-            />
-            <label>Full name</label>
-            <input
-              value={studentUpdate.full_name}
-              onChange={(e) => setStudentUpdate({ ...studentUpdate, full_name: e.target.value })}
-            />
-            <label>Class ID</label>
-            <input
-              value={studentUpdate.class_id}
-              onChange={(e) => setStudentUpdate({ ...studentUpdate, class_id: e.target.value })}
-            />
-            <label>NFC UID</label>
-            <input
-              value={studentUpdate.nfc_uid}
-              onChange={(e) => setStudentUpdate({ ...studentUpdate, nfc_uid: e.target.value })}
-            />
-            <label>Active</label>
-            <select
-              value={studentUpdate.is_active ? "true" : "false"}
-              onChange={(e) => setStudentUpdate({ ...studentUpdate, is_active: e.target.value === "true" })}
-            >
-              <option value="true">true</option>
-              <option value="false">false</option>
-            </select>
-            <button type="submit" style={{ marginTop: 8 }}>
-              Update
-            </button>
-          </form>
+      <main className="admin-main">
+        <div className="admin-header">
+          <h1>{activeTab[0].toUpperCase() + activeTab.slice(1)}</h1>
+          <span className="tag">Updated: {new Date().toLocaleTimeString()}</span>
         </div>
-        <form onSubmit={deleteStudent} style={{ marginTop: 12 }}>
-          <label>Delete student by ID</label>
-          <input value={studentDeleteId} onChange={(e) => setStudentDeleteId(e.target.value)} />
-          <button type="submit" style={{ marginTop: 8 }}>
-            Delete
-          </button>
-        </form>
-        <ul>
-          {students.map((student) => (
-            <li key={student.id}>
-              {student.id} — {student.full_name} (class {student.class_id})
-            </li>
-          ))}
-        </ul>
-      </div>
 
-      <div className="card">
-        <h2>Timetable</h2>
-        <form onSubmit={submitTimetable} className="grid grid-2">
-          <div>
-            <label>Weekday (1-7)</label>
-            <input
-              value={timetableForm.weekday}
-              onChange={(e) => setTimetableForm({ ...timetableForm, weekday: e.target.value })}
-            />
-          </div>
-          <div>
-            <label>Class ID</label>
-            <input
-              value={timetableForm.class_id}
-              onChange={(e) => setTimetableForm({ ...timetableForm, class_id: e.target.value })}
-            />
-          </div>
-          <div>
-            <label>Room ID</label>
-            <input
-              value={timetableForm.room_id}
-              onChange={(e) => setTimetableForm({ ...timetableForm, room_id: e.target.value })}
-            />
-          </div>
-          <div>
-            <label>Lesson number</label>
-            <input
-              value={timetableForm.lesson_number}
-              onChange={(e) => setTimetableForm({ ...timetableForm, lesson_number: e.target.value })}
-            />
-          </div>
-          <div style={{ gridColumn: "1 / -1" }}>
-            <label>Title</label>
-            <input
-              value={timetableForm.title}
-              onChange={(e) => setTimetableForm({ ...timetableForm, title: e.target.value })}
-            />
-          </div>
-          <button type="submit">Upsert</button>
-        </form>
-        <form onSubmit={deleteTimetable} style={{ marginTop: 12 }}>
-          <label>Delete timetable by ID</label>
-          <input value={timetableDeleteId} onChange={(e) => setTimetableDeleteId(e.target.value)} />
-          <button type="submit" style={{ marginTop: 8 }}>
-            Delete
-          </button>
-        </form>
-      </div>
+        {activeTab === "dashboard" && (
+          <>
+            <div className="metrics" style={{ marginBottom: 20 }}>
+              {metrics.map((metric) => (
+                <div className="metric-card" key={metric.label}>
+                  <h3>{metric.label}</h3>
+                  <p>{metric.value}</p>
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-2">
+              <div className="card">
+                <h2 className="section-title">Quick links</h2>
+                <p>Use the sidebar to manage data and media.</p>
+              </div>
+              <div className="card">
+                <h2 className="section-title">Last analytics run</h2>
+                <p>{checkins.length ? `${checkins.length} check-ins loaded` : "No data yet"}</p>
+              </div>
+            </div>
+          </>
+        )}
 
-      <div className="card">
-        <h2>Media</h2>
-        <form onSubmit={uploadMedia}>
-          <input type="file" name="media_file" accept="video/*" />
-          <button type="submit" style={{ marginTop: 8 }}>
-            Upload
-          </button>
-        </form>
-        <ul>
-          {media.map((item) => (
-            <li key={item.id}>
-              {item.filename} — <a href={resolveUrl(item.url)} target="_blank" rel="noreferrer">open</a>{" "}
-              <button className="secondary" onClick={() => deleteMedia(item.id)}>
-                delete
+        {activeTab === "rooms" && (
+          <div className="card">
+            <h2 className="section-title">Rooms</h2>
+            <div className="grid grid-2">
+              <form onSubmit={submitRoom}>
+                <label>Name</label>
+                <input value={roomForm.name} onChange={(e) => setRoomForm({ ...roomForm, name: e.target.value })} />
+                <label>Location</label>
+                <input value={roomForm.location} onChange={(e) => setRoomForm({ ...roomForm, location: e.target.value })} />
+                <button type="submit" style={{ marginTop: 8 }}>
+                  Create
+                </button>
+              </form>
+              <form onSubmit={submitRoomUpdate}>
+                <label>Room ID</label>
+                <input value={roomUpdate.id} onChange={(e) => setRoomUpdate({ ...roomUpdate, id: e.target.value })} />
+                <label>Name</label>
+                <input value={roomUpdate.name} onChange={(e) => setRoomUpdate({ ...roomUpdate, name: e.target.value })} />
+                <label>Location</label>
+                <input
+                  value={roomUpdate.location}
+                  onChange={(e) => setRoomUpdate({ ...roomUpdate, location: e.target.value })}
+                />
+                <label>Active</label>
+                <select
+                  value={roomUpdate.is_active ? "true" : "false"}
+                  onChange={(e) => setRoomUpdate({ ...roomUpdate, is_active: e.target.value === "true" })}
+                >
+                  <option value="true">true</option>
+                  <option value="false">false</option>
+                </select>
+                <button type="submit" style={{ marginTop: 8 }}>
+                  Update
+                </button>
+              </form>
+            </div>
+            <form onSubmit={deleteRoom} style={{ marginTop: 12 }}>
+              <label>Delete room by ID</label>
+              <input value={roomDeleteId} onChange={(e) => setRoomDeleteId(e.target.value)} />
+              <button type="submit" style={{ marginTop: 8 }}>
+                Delete
               </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+            </form>
+            <ul>
+              {rooms.map((room) => (
+                <li key={room.id}>
+                  {room.id} — {room.name} ({room.location || "n/a"})
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
-      <div className="card">
-        <h2>Analytics</h2>
-        <form onSubmit={runAnalytics} className="grid grid-2">
-          <div>
-            <label>Date (YYYY-MM-DD)</label>
-            <input
-              value={analyticsFilters.date}
-              onChange={(e) => setAnalyticsFilters({ ...analyticsFilters, date: e.target.value })}
-            />
+        {activeTab === "classes" && (
+          <div className="card">
+            <h2 className="section-title">Classes</h2>
+            <div className="grid grid-2">
+              <form onSubmit={submitClass}>
+                <label>Name</label>
+                <input value={classForm.name} onChange={(e) => setClassForm({ name: e.target.value })} />
+                <button type="submit" style={{ marginTop: 8 }}>
+                  Create
+                </button>
+              </form>
+              <form onSubmit={submitClassUpdate}>
+                <label>Class ID</label>
+                <input value={classUpdate.id} onChange={(e) => setClassUpdate({ ...classUpdate, id: e.target.value })} />
+                <label>Name</label>
+                <input value={classUpdate.name} onChange={(e) => setClassUpdate({ ...classUpdate, name: e.target.value })} />
+                <label>Active</label>
+                <select
+                  value={classUpdate.is_active ? "true" : "false"}
+                  onChange={(e) => setClassUpdate({ ...classUpdate, is_active: e.target.value === "true" })}
+                >
+                  <option value="true">true</option>
+                  <option value="false">false</option>
+                </select>
+                <button type="submit" style={{ marginTop: 8 }}>
+                  Update
+                </button>
+              </form>
+            </div>
+            <form onSubmit={deleteClass} style={{ marginTop: 12 }}>
+              <label>Delete class by ID</label>
+              <input value={classDeleteId} onChange={(e) => setClassDeleteId(e.target.value)} />
+              <button type="submit" style={{ marginTop: 8 }}>
+                Delete
+              </button>
+            </form>
+            <ul>
+              {classes.map((cls) => (
+                <li key={cls.id}>
+                  {cls.id} — {cls.name}
+                </li>
+              ))}
+            </ul>
           </div>
-          <div>
-            <label>Class ID</label>
-            <input
-              value={analyticsFilters.class_id}
-              onChange={(e) => setAnalyticsFilters({ ...analyticsFilters, class_id: e.target.value })}
-            />
+        )}
+
+        {activeTab === "students" && (
+          <div className="card">
+            <h2 className="section-title">Students</h2>
+            <div className="grid grid-2">
+              <form onSubmit={submitStudent}>
+                <label>Full name</label>
+                <input
+                  value={studentForm.full_name}
+                  onChange={(e) => setStudentForm({ ...studentForm, full_name: e.target.value })}
+                />
+                <label>Class ID</label>
+                <input
+                  value={studentForm.class_id}
+                  onChange={(e) => setStudentForm({ ...studentForm, class_id: e.target.value })}
+                />
+                <label>NFC UID</label>
+                <input
+                  value={studentForm.nfc_uid}
+                  onChange={(e) => setStudentForm({ ...studentForm, nfc_uid: e.target.value })}
+                />
+                <button type="submit" style={{ marginTop: 8 }}>
+                  Create
+                </button>
+              </form>
+              <form onSubmit={submitStudentUpdate}>
+                <label>Student ID</label>
+                <input
+                  value={studentUpdate.id}
+                  onChange={(e) => setStudentUpdate({ ...studentUpdate, id: e.target.value })}
+                />
+                <label>Full name</label>
+                <input
+                  value={studentUpdate.full_name}
+                  onChange={(e) => setStudentUpdate({ ...studentUpdate, full_name: e.target.value })}
+                />
+                <label>Class ID</label>
+                <input
+                  value={studentUpdate.class_id}
+                  onChange={(e) => setStudentUpdate({ ...studentUpdate, class_id: e.target.value })}
+                />
+                <label>NFC UID</label>
+                <input
+                  value={studentUpdate.nfc_uid}
+                  onChange={(e) => setStudentUpdate({ ...studentUpdate, nfc_uid: e.target.value })}
+                />
+                <label>Active</label>
+                <select
+                  value={studentUpdate.is_active ? "true" : "false"}
+                  onChange={(e) => setStudentUpdate({ ...studentUpdate, is_active: e.target.value === "true" })}
+                >
+                  <option value="true">true</option>
+                  <option value="false">false</option>
+                </select>
+                <button type="submit" style={{ marginTop: 8 }}>
+                  Update
+                </button>
+              </form>
+            </div>
+            <form onSubmit={deleteStudent} style={{ marginTop: 12 }}>
+              <label>Delete student by ID</label>
+              <input value={studentDeleteId} onChange={(e) => setStudentDeleteId(e.target.value)} />
+              <button type="submit" style={{ marginTop: 8 }}>
+                Delete
+              </button>
+            </form>
+            <ul>
+              {students.map((student) => (
+                <li key={student.id}>
+                  {student.id} — {student.full_name} (class {student.class_id})
+                </li>
+              ))}
+            </ul>
           </div>
-          <div>
-            <label>Student ID</label>
-            <input
-              value={analyticsFilters.student_id}
-              onChange={(e) => setAnalyticsFilters({ ...analyticsFilters, student_id: e.target.value })}
-            />
+        )}
+
+        {activeTab === "timetable" && (
+          <div className="card">
+            <h2 className="section-title">Timetable</h2>
+            <form onSubmit={submitTimetable} className="grid grid-2">
+              <div>
+                <label>Weekday (1-7)</label>
+                <input
+                  value={timetableForm.weekday}
+                  onChange={(e) => setTimetableForm({ ...timetableForm, weekday: e.target.value })}
+                />
+              </div>
+              <div>
+                <label>Class ID</label>
+                <input
+                  value={timetableForm.class_id}
+                  onChange={(e) => setTimetableForm({ ...timetableForm, class_id: e.target.value })}
+                />
+              </div>
+              <div>
+                <label>Room ID</label>
+                <input
+                  value={timetableForm.room_id}
+                  onChange={(e) => setTimetableForm({ ...timetableForm, room_id: e.target.value })}
+                />
+              </div>
+              <div>
+                <label>Lesson number</label>
+                <input
+                  value={timetableForm.lesson_number}
+                  onChange={(e) => setTimetableForm({ ...timetableForm, lesson_number: e.target.value })}
+                />
+              </div>
+              <div style={{ gridColumn: "1 / -1" }}>
+                <label>Title</label>
+                <input
+                  value={timetableForm.title}
+                  onChange={(e) => setTimetableForm({ ...timetableForm, title: e.target.value })}
+                />
+              </div>
+              <button type="submit">Upsert</button>
+            </form>
+            <form onSubmit={deleteTimetable} style={{ marginTop: 12 }}>
+              <label>Delete timetable by ID</label>
+              <input value={timetableDeleteId} onChange={(e) => setTimetableDeleteId(e.target.value)} />
+              <button type="submit" style={{ marginTop: 8 }}>
+                Delete
+              </button>
+            </form>
           </div>
-          <div>
-            <label>Status</label>
-            <select
-              value={analyticsFilters.status}
-              onChange={(e) => setAnalyticsFilters({ ...analyticsFilters, status: e.target.value })}
-            >
-              <option value="">any</option>
-              <option value="on_time">on_time</option>
-              <option value="late">late</option>
-            </select>
+        )}
+
+        {activeTab === "media" && (
+          <div className="card">
+            <h2 className="section-title">Media</h2>
+            <form onSubmit={uploadMedia}>
+              <input type="file" name="media_file" accept="video/*" />
+              <button type="submit" style={{ marginTop: 8 }}>
+                Upload
+              </button>
+            </form>
+            <ul>
+              {media.map((item) => (
+                <li key={item.id}>
+                  {item.filename} —{" "}
+                  <a href={resolveUrl(item.url)} target="_blank" rel="noreferrer">
+                    open
+                  </a>{" "}
+                  <button className="secondary" onClick={() => deleteMedia(item.id)}>
+                    delete
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
-          <button type="submit">Run</button>
-        </form>
-        <ul>
-          {checkins.map((item) => (
-            <li key={item.id}>
-              {item.arrival_at} — {item.student?.full_name || "Unknown"} — {item.status}
-            </li>
-          ))}
-        </ul>
-      </div>
+        )}
+
+        {activeTab === "analytics" && (
+          <div className="card">
+            <h2 className="section-title">Analytics</h2>
+            <form onSubmit={runAnalytics} className="grid grid-2">
+              <div>
+                <label>Date (YYYY-MM-DD)</label>
+                <input
+                  value={analyticsFilters.date}
+                  onChange={(e) => setAnalyticsFilters({ ...analyticsFilters, date: e.target.value })}
+                />
+              </div>
+              <div>
+                <label>Class ID</label>
+                <input
+                  value={analyticsFilters.class_id}
+                  onChange={(e) => setAnalyticsFilters({ ...analyticsFilters, class_id: e.target.value })}
+                />
+              </div>
+              <div>
+                <label>Student ID</label>
+                <input
+                  value={analyticsFilters.student_id}
+                  onChange={(e) => setAnalyticsFilters({ ...analyticsFilters, student_id: e.target.value })}
+                />
+              </div>
+              <div>
+                <label>Status</label>
+                <select
+                  value={analyticsFilters.status}
+                  onChange={(e) => setAnalyticsFilters({ ...analyticsFilters, status: e.target.value })}
+                >
+                  <option value="">any</option>
+                  <option value="on_time">on_time</option>
+                  <option value="late">late</option>
+                </select>
+              </div>
+              <button type="submit">Run</button>
+            </form>
+            <ul>
+              {checkins.map((item) => (
+                <li key={item.id}>
+                  {item.arrival_at} — {item.student?.full_name || "Unknown"} — {item.status}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </main>
     </div>
   );
 }
