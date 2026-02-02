@@ -1,3 +1,8 @@
 # Frontend
 
-Placeholder for frontend app.
+Vite + React app with routes:
+
+- `/door/:roomId`
+- `/entrance`
+- `/tv`
+- `/admin`

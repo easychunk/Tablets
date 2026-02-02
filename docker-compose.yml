@@ -22,8 +22,38 @@ services:
     container_name: tablets-backend
     ports:
       - "8000:8000"
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: tablets
+      DB_USER: tablets
+      DB_PASSWORD: tablets
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: admin
+      JWT_SECRET: change-me
+      JWT_EXP_MINUTES: 480
+      TIMEZONE: Europe/Vienna
+      GRACE_MINUTES: 5
+      MEDIA_DIR: /app/media
+      MEDIA_URL_PREFIX: /media
+    volumes:
+      - ./media:/app/media
     depends_on:
       - db
+
+  frontend:
+    image: node:20-alpine
+    container_name: tablets-frontend
+    working_dir: /app
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:8000
+    volumes:
+      - ./frontend:/app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    depends_on:
+      - backend
 
 volumes:
   db_data:

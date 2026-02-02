@@ -1,0 +1,105 @@
+body {
+  margin: 0;
+  font-family: "Fira Sans", system-ui, -apple-system, sans-serif;
+  background: #0f1419;
+  color: #f2f5f7;
+}
+
+a {
+  color: inherit;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.card {
+  background: #17212b;
+  border: 1px solid #2b3a47;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+}
+
+.grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #b3c1cc;
+}
+
+input,
+select,
+button,
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #2b3a47;
+  background: #0f1419;
+  color: #f2f5f7;
+  box-sizing: border-box;
+}
+
+button {
+  cursor: pointer;
+  background: #2a9d8f;
+  border: none;
+  color: #0f1419;
+  font-weight: 600;
+}
+
+button.secondary {
+  background: #264653;
+  color: #f2f5f7;
+}
+
+.kiosk {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px;
+}
+
+.kiosk h1 {
+  font-size: 48px;
+  margin: 0 0 12px 0;
+}
+
+.kiosk h2 {
+  font-size: 32px;
+  margin: 0 0 8px 0;
+}
+
+.kiosk p {
+  font-size: 20px;
+  margin: 6px 0;
+  color: #b3c1cc;
+}
+
+.status {
+  font-size: 28px;
+  margin-top: 16px;
+}
+
+.tag {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  background: #264653;
+}

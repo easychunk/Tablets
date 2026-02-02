@@ -107,3 +107,17 @@ CREATE TABLE checkins (
     FOREIGN KEY (device_id) REFERENCES devices(id)
     ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Медіа для TV (відео)
+CREATE TABLE media (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  type ENUM('video') NOT NULL,
+  filename VARCHAR(255) NOT NULL,
+  path VARCHAR(255) NOT NULL,
+  duration_sec INT UNSIGNED NULL,
+  is_active TINYINT(1) NOT NULL DEFAULT 1,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_media_type (type),
+  KEY idx_media_is_active (is_active)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
