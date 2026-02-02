@@ -1,13 +1,17 @@
+-- Демонстраційні дані для MVP
 USE tablets;
 
+-- Аудиторії
 INSERT INTO rooms (name, location, is_active) VALUES
   ('A-101', 'First floor', 1),
   ('B-202', 'Second floor', 1);
 
+-- Класи
 INSERT INTO classes (name, is_active) VALUES
   ('10A', 1),
   ('10B', 1);
 
+-- Учні з унікальними NFC UID
 INSERT INTO students (full_name, class_id, nfc_uid, is_active) VALUES
   ('Alex Novak', 1, 'NFC-10A-001', 1),
   ('Marta Klein', 1, 'NFC-10A-002', 1),
@@ -15,6 +19,7 @@ INSERT INTO students (full_name, class_id, nfc_uid, is_active) VALUES
   ('Lina Bauer', 2, 'NFC-10B-001', 1),
   ('Omar Silva', 2, 'NFC-10B-002', 1);
 
+-- Дзвінки (Пн–Пт, уроки 1–7)
 INSERT INTO bell_times (weekday, lesson_number, start_time, end_time) VALUES
   (1, 1, '08:00:00', '08:45:00'),
   (1, 2, '08:55:00', '09:40:00'),
@@ -52,6 +57,7 @@ INSERT INTO bell_times (weekday, lesson_number, start_time, end_time) VALUES
   (5, 6, '12:35:00', '13:20:00'),
   (5, 7, '13:30:00', '14:15:00');
 
+-- Розклад для понеділка (дві паралелі)
 INSERT INTO timetable (weekday, class_id, room_id, lesson_number, title) VALUES
   (1, 1, 1, 1, 'Mathematics'),
   (1, 1, 1, 2, 'Physics'),
@@ -68,6 +74,7 @@ INSERT INTO timetable (weekday, class_id, room_id, lesson_number, title) VALUES
   (1, 2, 2, 6, 'Physics'),
   (1, 2, 2, 7, 'PE');
 
+-- Пристрої: один вхідний + два дверні
 INSERT INTO devices (device_key, type, room_id) VALUES
   ('entrance-01', 'entrance', NULL),
   ('door-a101', 'door', 1),

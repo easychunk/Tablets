@@ -1,7 +1,8 @@
--- MySQL 8 schema for Tablets MVP
+-- Схема БД MySQL 8 для MVP
 CREATE DATABASE IF NOT EXISTS tablets CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE tablets;
 
+-- Класи/аудиторії
 CREATE TABLE rooms (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(50) NOT NULL,
@@ -11,6 +12,7 @@ CREATE TABLE rooms (
   UNIQUE KEY uk_rooms_name (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Класи (напр., 10A)
 CREATE TABLE classes (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(50) NOT NULL,
@@ -19,6 +21,7 @@ CREATE TABLE classes (
   UNIQUE KEY uk_classes_name (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Учні з прив'язкою до NFC UID
 CREATE TABLE students (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   full_name VARCHAR(120) NOT NULL,
@@ -33,6 +36,7 @@ CREATE TABLE students (
     ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Дзвінки: часи уроків за днями тижня
 CREATE TABLE bell_times (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   weekday TINYINT UNSIGNED NOT NULL,
@@ -41,9 +45,11 @@ CREATE TABLE bell_times (
   end_time TIME NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY uk_bell_times_day_lesson (weekday, lesson_number),
-  KEY idx_bell_times_weekday (weekday)
+  KEY idx_bell_times_weekday (weekday),
+  KEY idx_bell_times_weekday_start (weekday, start_time)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Розклад занять
 CREATE TABLE timetable (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   weekday TINYINT UNSIGNED NOT NULL,
@@ -55,6 +61,7 @@ CREATE TABLE timetable (
   UNIQUE KEY uk_timetable_day_class_lesson (weekday, class_id, lesson_number),
   KEY idx_timetable_day_class (weekday, class_id),
   KEY idx_timetable_day_room (weekday, room_id),
+  KEY idx_timetable_day_lesson (weekday, lesson_number),
   CONSTRAINT fk_timetable_class
     FOREIGN KEY (class_id) REFERENCES classes(id)
     ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -63,6 +70,7 @@ CREATE TABLE timetable (
     ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Пристрої (door/entrance/tv)
 CREATE TABLE devices (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   device_key VARCHAR(64) NOT NULL,
@@ -78,6 +86,7 @@ CREATE TABLE devices (
     ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Чек-іни учнів
 CREATE TABLE checkins (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   student_id BIGINT UNSIGNED NULL,
