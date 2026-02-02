@@ -14,7 +14,11 @@ router = APIRouter(prefix="/api/admin", tags=["media"])
 
 
 def _media_url(filename: str) -> str:
-    return f"{settings.media_url_prefix}/{filename}"
+    base = settings.public_base_url.rstrip("/")
+    prefix = settings.media_url_prefix
+    if not prefix.startswith("/"):
+        prefix = f"/{prefix}"
+    return f"{base}{prefix}/{filename}"
 
 
 @router.get("/media", response_model=list[MediaOut])

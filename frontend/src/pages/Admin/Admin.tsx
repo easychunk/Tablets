@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
-import { apiFetch, getApiUrl } from "../../api";
+import { apiFetch, getApiUrl, resolveUrl } from "../../api";
 
 type Room = { id: number; name: string; location?: string | null; is_active: boolean };
 type ClassGroup = { id: number; name: string; is_active: boolean };
@@ -533,7 +533,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
         <ul>
           {media.map((item) => (
             <li key={item.id}>
-              {item.filename} — <a href={item.url}>open</a>{" "}
+              {item.filename} — <a href={resolveUrl(item.url)} target="_blank" rel="noreferrer">open</a>{" "}
               <button className="secondary" onClick={() => deleteMedia(item.id)}>
                 delete
               </button>

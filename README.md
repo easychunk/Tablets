@@ -40,6 +40,10 @@ Grace period and start time:
 - `GRACE_MINUTES` (default 5)
 - `SCHOOL_START_TIME` (optional, format `HH:MM:SS`)
 
+Media URL base:
+
+- `PUBLIC_BASE_URL` (used to build absolute media URLs)
+
 ## TV page
 
 Open `/tv` and (optional) pass classes and video URL:

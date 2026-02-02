@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { apiFetch, getToken } from "../api";
+import { apiFetch, getToken, resolveUrl } from "../api";
 
 type Lesson = {
   lesson_number: number;
@@ -55,13 +55,13 @@ export default function TvPage() {
 
       const queryVideo = params.get("video");
       if (queryVideo) {
-        list.push({ type: "video", url: queryVideo });
+        list.push({ type: "video", url: resolveUrl(queryVideo) });
       } else if (getToken()) {
         try {
           const media = await apiFetch<MediaItem[]>("/api/admin/media", {}, true);
           const active = media.find((item) => item.is_active);
           if (active) {
-            list.push({ type: "video", url: active.url });
+            list.push({ type: "video", url: resolveUrl(active.url) });
           }
         } catch {
           // ignore

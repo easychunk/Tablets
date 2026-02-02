@@ -24,6 +24,7 @@ class Settings(BaseSettings):
 
     media_dir: str = Field("/app/media", alias="MEDIA_DIR")
     media_url_prefix: str = Field("/media", alias="MEDIA_URL_PREFIX")
+    public_base_url: str = Field("http://localhost:8000", alias="PUBLIC_BASE_URL")
 
 
 settings = Settings()

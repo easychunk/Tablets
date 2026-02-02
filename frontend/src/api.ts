@@ -4,6 +4,14 @@ export function getApiUrl(path: string) {
   return `${API_URL}${path}`;
 }
 
+export function resolveUrl(pathOrUrl: string) {
+  if (!pathOrUrl) return pathOrUrl;
+  if (pathOrUrl.startsWith("http://") || pathOrUrl.startsWith("https://")) {
+    return pathOrUrl;
+  }
+  return getApiUrl(pathOrUrl);
+}
+
 export function getToken() {
   return localStorage.getItem("admin_token");
 }
