@@ -1,8 +1,2 @@
 # Tablets
-# Tablets
-# Tablets
-# Tablets
-# Tablets
-# Tablets
-# Tablets
-# Tablets
+ fgdd
